@@ -1,5 +1,5 @@
 /* eslint-disable import/no-duplicates */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import type { Images, BaseImagePreviewProps } from './interface';
 import Popup from '../popup';
@@ -17,17 +17,11 @@ export interface ImagePreviewProps extends BaseImagePreviewProps {
 }
 
 const ImagePreview = React.forwardRef<unknown, ImagePreviewProps>((props, ref) => {
-  const doubleClickTimer = useRef<ReturnType<typeof setTimeout> | null>();
-
-  const touchStartTime = useRef<number>(Date.now());
-
   const imagePreviewRef = (ref as any) || React.createRef<HTMLDivElement>();
 
   const { locale: globalLocal, prefixCls: globalPrefixCls } = React.useContext(ConfigContext);
 
   const prefixCls = `${globalPrefixCls}-image-preview`;
-
-  const moving = useRef<boolean>();
 
   const {
     visible,
@@ -68,9 +62,6 @@ const ImagePreview = React.forwardRef<unknown, ImagePreviewProps>((props, ref) =
   };
 
   const close = () => {
-    if (moving.current) {
-      return false;
-    }
     if (typeof onClose === 'function') {
       onClose();
     }
@@ -100,45 +91,18 @@ const ImagePreview = React.forwardRef<unknown, ImagePreviewProps>((props, ref) =
     img.src = originSrc;
   };
 
-  const onWrapperTouchStart = useCallback(() => {
-    touchStartTime.current = Date.now();
-  }, []);
+  const [swipeable, setSwipeable] = useState(true);
 
-  const onWrapperTouchEnd = useCallback(() => {
-    const deltaTime = Date.now() - touchStartTime.current;
-    // prevent long tap to close component
-    if (deltaTime < 300) {
-      if (!doubleClickTimer.current && !moving.current) {
-        doubleClickTimer.current = setTimeout(() => {
-          doubleClickTimer.current = null;
-          if (typeof onClose === 'function') {
-            onClose();
-          }
-        }, 300);
+  const onPinchZoom = useCallback(
+    (scale) => {
+      if (scale !== minScale!) {
+        setSwipeable(false);
       } else {
-        doubleClickTimer.current && clearTimeout(doubleClickTimer.current);
-        doubleClickTimer.current = null;
+        setSwipeable(true);
       }
-    }
-    moving.current = false;
-  }, [onClose]);
-
-  const onWrapperTouchMove = useCallback(() => {
-    if (touchStartTime.current) {
-      moving.current = true;
-    }
-  }, []);
-
-  const onWrapperMouseDown = useCallback(() => {
-    touchStartTime.current = Date.now();
-  }, []);
-
-  const onWrapperMouseUp = useCallback(() => {
-    setTimeout(() => {
-      moving.current = false;
-    }, 0);
-    touchStartTime.current = 0;
-  }, []);
+    },
+    [minScale],
+  );
 
   const renderImages = () => {
     const height = Math.min(window?.innerHeight, window?.innerWidth);
@@ -148,7 +112,12 @@ const ImagePreview = React.forwardRef<unknown, ImagePreviewProps>((props, ref) =
     return images.map((item, i) => {
       return (
         <div className={`${prefixCls}__item`} key={+i}>
-          <PinchZoom className={`${prefixCls}__item__img`} minScale={minScale} maxScale={maxScale}>
+          <PinchZoom
+            className={`${prefixCls}__item__img`}
+            minScale={minScale}
+            maxScale={maxScale}
+            onPinchZoom={onPinchZoom}
+          >
             <img src={item.src} alt="" draggable={false} style={style} />
           </PinchZoom>
         </div>
@@ -189,21 +158,15 @@ const ImagePreview = React.forwardRef<unknown, ImagePreviewProps>((props, ref) =
 
   return (
     <Popup direction="center" visible={visible} className={classnames(prefixCls, className)}>
-      <div
-        className={cls}
-        onTouchStart={onWrapperTouchStart}
-        onTouchEnd={onWrapperTouchEnd}
-        onTouchCancel={onWrapperTouchEnd}
-        onTouchMove={onWrapperTouchMove}
-        onMouseDown={onWrapperMouseDown}
-        onMouseMove={onWrapperTouchMove}
-        onMouseUp={onWrapperMouseUp}
-        onClick={close}
-        ref={imagePreviewRef}
-      >
+      <div className={cls} onClick={close} ref={imagePreviewRef}>
         {visible &&
           (images?.length ? (
-            <Carousel showPagination={false} onChange={onChange} activeIndex={currentIndex}>
+            <Carousel
+              showPagination={false}
+              onChange={onChange}
+              activeIndex={currentIndex}
+              swipeable={swipeable}
+            >
               {renderImages()}
             </Carousel>
           ) : (

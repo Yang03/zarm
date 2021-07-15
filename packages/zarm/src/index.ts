@@ -28,10 +28,6 @@ export { default as DatePicker } from './date-picker';
 export type { DateSelectProps } from './date-select';
 export { default as DateSelect } from './date-select';
 
-export type { DragProps, DragEvent, DragState } from './drag';
-export { default as Drag } from './drag';
-export { default as useDrag } from './useDrag';
-
 export { default as FilePicker } from './file-picker';
 
 export type { IconProps } from './icon';
@@ -103,7 +99,9 @@ export { default as Switch } from './switch';
 export type { TabsProps, TabPanelProps } from './tabs';
 export { default as Tabs } from './tabs';
 
+export type { ToastProps, UseToast } from './toast';
 export { default as Toast } from './toast';
+
 export { default as Tooltip } from './tooltip';
 export { default as Trigger } from './trigger';
 
@@ -134,3 +132,12 @@ export { default as StackPicker } from './stack-picker';
 
 export type { AffixProps } from './affix';
 export { default as Affix } from './affix';
+
+export type { DragProps, DragEvent, DragState } from './drag';
+export { default as Drag } from './drag';
+export { default as useDrag } from './useDrag';
+
+export type { UseLongPressProps } from './useLongPress';
+export { default as useLongPress } from './useLongPress';
+
+export { default as useSafeLayoutEffect } from './useSafeLayoutEffect';
