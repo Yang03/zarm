@@ -9,13 +9,19 @@
   - [ImagePreview] 原图查看功能`ImageObject[{src: string, originSrc: string}]`替换了`ImageObject[{url: string, originUrl: string}]`,新增支持手机切换横屏模式。
   - [Toast] 静态方法挂载到 `Toast.useToast` 下，详细用法参考官网例子。
 
+## v2.9.5
+
+- Bug Fix
+
+  - 修复 Loading 和 Toast 静态方法使用后实例未销毁的 bug。[#710](https://github.com/ZhongAnTech/zarm/issues/710)
+
 ## v2.9.4
 
 - Bug Fix
 
   - [Collapse] 修复同时设置 activeKey 和 defaultActiveKey 属性属性导致的 bug。[#698](https://github.com/ZhongAnTech/zarm/pull/698)
 
-  - [Modal] 修复 Modal 静态方法 `Modal.confirm` 和 `Modal.alert` 使用后实例未销毁的 bug。[#710](https://github.com/ZhongAnTech/zarm/pull/710)
+  - [Modal] 修复 Modal 静态方法 `Modal.confirm` 和 `Modal.alert` 使用后实例未销毁的 bug。[#710](https://github.com/ZhongAnTech/zarm/issues/710)
 
 - Perf
   - [Button] 优化按钮点击 300ms 延时。[#701](https://github.com/ZhongAnTech/zarm/pull/701)
