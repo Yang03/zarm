@@ -18,7 +18,7 @@ function range(num: number, min: number, max: number): number {
   return Math.min(Math.max(num, min), max);
 }
 
-export interface PinchZoomProps extends HTMLAttributes<HTMLElement>, BasePinchZoomProps {}
+export interface PinchZoomProps extends HTMLAttributes<HTMLDivElement>, BasePinchZoomProps {}
 
 const PinchZoom = React.forwardRef<unknown, PinchZoomProps>((props, ref) => {
   const container = useRef<HTMLDivElement | null>();
@@ -113,13 +113,16 @@ const PinchZoom = React.forwardRef<unknown, PinchZoomProps>((props, ref) => {
       const maxMoveY = getMaxMoveY();
       moveX.current = range(deltaX + startMoveX.current, -maxMoveX, maxMoveX);
       moveY.current = range(deltaY + startMoveY.current, -maxMoveY, maxMoveY);
+      if (scale.current !== 1) {
+        updateTransform(scale.current, moveX.current, moveY.current);
+      }
     }
 
     if (zooming.current && touches.length === 2) {
       const distance = getDistance(touches[0], touches[1]);
       const currentScale = (startScale.current * distance) / prevDistance.current;
       scale.current = currentScale > maxScale! ? maxScale! : currentScale;
-      updateTransform(scale.current, moveX.current, moveY.current);
+      updateTransform(scale.current, 0, 0);
     }
   };
 
@@ -143,7 +146,8 @@ const PinchZoom = React.forwardRef<unknown, PinchZoomProps>((props, ref) => {
         startTouchY.current = 0;
         startScale.current = 1;
         if (scale.current < 1) {
-          updateTransform(1, 0, 0);
+          scale.current = 1;
+          updateTransform(scale.current, 0, 0);
         }
       }
     }
