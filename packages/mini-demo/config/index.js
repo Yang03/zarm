@@ -78,7 +78,7 @@ const config = {
           selector: [':root, page', '^za'],
           transform: (decl) => {
             const oldValue = decl.value;
-            const val = oldValue.replace(/(\d*\.?\d+)(px)/g, (_match, value) => {
+            const val = oldValue.replace(/(\d*\.?\d+)(px|PX)/g, (_match, value) => {
               return `${parseInt(value, 10) * 2}rpx`;
             });
             decl.value = val;
@@ -116,7 +116,7 @@ const config = {
           selector: [':root, page', '^za'],
           transform: (decl) => {
             const oldValue = decl.value;
-            const val = oldValue.replace(/(\d*\.?\d+)(px)/g, (_match, value, unit) => {
+            const val = oldValue.replace(/(\d*\.?\d+)(px|PX)/g, (_match, value, unit) => {
               return `${value * 2}${unit}`;
             });
             decl.value = val;

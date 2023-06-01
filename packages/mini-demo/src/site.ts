@@ -76,6 +76,11 @@ const siteMap = {
         name: '动作面板',
         page: '/pages/popup/index',
       },
+      {
+        key: 'Collapse',
+        name: '折叠面板',
+        page: '/pages/collapse/index',
+      },
       // {
       //   key: 'Message',
       //   name: '消息',

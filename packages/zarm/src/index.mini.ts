@@ -15,3 +15,6 @@ export type { PanelProps } from './panel/index.mini';
 export { default as Popup } from './popup/index.mini';
 export type { PopupProps } from './popup/index.mini';
 
+export { default as Collapse } from './collapse/index.mini';
+export type { CollapseProps } from './collapse/index.mini';
+

@@ -1,8 +1,18 @@
-import React, { HTMLAttributes } from 'react';
+import React, { HTMLAttributes, useMemo } from 'react';
 import { createBEM } from '@zarm-design/bem';
+import Taro from '@tarojs/taro';
 import type { BaseCollapseItemProps } from './interface';
 import { ConfigContext } from '../config-provider';
 import { useSafeLayoutEffect } from '../utils/hooks';
+import { nanoid } from '../utils';
+
+const getRect = (id): Promise<Taro.NodesRef.BoundingClientRectCallbackResult> => {
+  return new Promise((resolve) => {
+    Taro.createSelectorQuery().select(`#${id}`).boundingClientRect((rect) => {
+      resolve(rect);
+    }).exec();
+  });
+}
 
 export type CollapseItemProps = Omit<HTMLAttributes<HTMLDivElement>, 'key' | 'title' | 'onChange'> &
   BaseCollapseItemProps;
@@ -15,24 +25,18 @@ const CollapseItem = React.forwardRef<unknown, CollapseItemProps>((props, ref) =
   const { prefixCls } = React.useContext(ConfigContext);
   const bem = createBEM('collapse-item', { prefixCls });
 
+  const id = useMemo(() => `collapse-item-${nanoid()}`, []);
+
   const onClickItem = () => {
     if (disabled) return;
     onChange?.(isActive!);
   };
 
-  const getContentHeight = (ele) => {
-    const contentChildren = [...ele.children];
 
-    console.log(contentChildren);
-    return contentChildren.reduce((res, next) => {
-      res += next.offsetHeight;
-      return res;
-    }, 0);
-  };
-
-  const setStyle = React.useCallback(() => {
+  const setStyle = React.useCallback(async () => {
     if (!content.current) return;
-    content.current.style.height = isActive ? `${getContentHeight(content.current)}px` : '0px';
+    const rect = await getRect(id);
+    content.current.style.height = isActive ? `${rect.height}px` : '0px';
   }, [content, isActive]);
 
   const cls = bem([
@@ -54,7 +58,7 @@ const CollapseItem = React.forwardRef<unknown, CollapseItemProps>((props, ref) =
         <div className={bem('arrow')} />
       </div>
       <div className={bem('content')} ref={content}>
-        <div className={bem('content__inner')}>{children}</div>
+        <div className={bem('content__inner')} id={id}>{children}</div>
       </div>
     </div>
   );
