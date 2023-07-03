@@ -91,7 +91,7 @@ const Popper = forwardRef<refHander, PopperProps>((props, ref) => {
       }),
     );
   }
-  const { x, y, reference, floating, strategy, context, update } = useFloating({
+  const { x, y, reference, floating, strategy, context, update, refs } = useFloating({
     open,
     onOpenChange: (state) => {
       setOpen(state);
@@ -137,6 +137,10 @@ const Popper = forwardRef<refHander, PopperProps>((props, ref) => {
     useFocus(context, { enabled: trigger === 'focus' }),
     useDismiss(context, { enabled: trigger !== 'manual' }),
   ]);
+
+  useEffect(() => {
+    update();
+  }, [content]);
 
   const transitionName = getTransitionName(prefixCls, directionMap[direction!], animationType);
 
